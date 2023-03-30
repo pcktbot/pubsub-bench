@@ -14,19 +14,23 @@ const {
 
 const pubsub = new PubSub({ projectId: PUBSUB_PROJECT_ID });
 
-const subscribe = () => {
-  const subscription = pubsub.subscription(PUBSUB_SUBSCRIPTION);
-  console.info(`📭 Listening for messages on ${PUBSUB_SUBSCRIPTION}`);
+const subscribe = (subscriptionId) => {
+  const subscription = pubsub.subscription(subscriptionId);
+  console.info(`📭 Listening for messages on ${subscriptionId}`);
   return subscription
 };
 
 const handleMessage = (message) => {
   console.log(`📬 Received message ${message.id}:`);
+  let data;
+  data = Buffer.from(message.data, 'base64').toString().trim();
+  data = JSON.parse(data);
+  console.log(data);
   message.ack();
 };
 
-const subscription = subscribe();
+const subscription = subscribe(PUBSUB_SUBSCRIPTION);
 
-subscription.on('message', message => handleMessage);
+subscription.on('message', message => handleMessage(message));
 
 app.listen(3003, () => console.log('📭 Server is running on port 3003'));
