@@ -35,7 +35,7 @@ const handleMessage = (message) => {
   let data;
   data = Buffer.from(message.data, 'base64').toString().trim();
   data = JSON.parse(data);
-  console.log(data);
+  console.info({ id: message.id, data });
   message.ack();
 };
 
@@ -56,7 +56,6 @@ app.use(express.json());
 app.post('/publish', async (req, res) => {
   const { message, count } = req.body;
   const messages = Array(count).fill(message);
-  console.info({ messages });
   const messageIds = await bundleMessages(messages);
   res.send(messageIds);
 });
