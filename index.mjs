@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 import asyncPool from 'tiny-async-pool';
 
 config();
-const app = express();
+export const app = express();
 
 const {
   PUBSUB_TOPIC,
@@ -16,7 +16,7 @@ const {
 
 const pubsub = new PubSub({ projectId: PUBSUB_PROJECT_ID });
 
-const publish = async (data) => {
+export const publish = async (data) => {
   const dataBuffer = Buffer.from(JSON.stringify(data));
   console.info(`📫 Publishing message to ${PUBSUB_TOPIC}...`, dataBuffer);
   return await pubsub.topic(PUBSUB_TOPIC).publishMessage({ data: dataBuffer });
@@ -24,13 +24,13 @@ const publish = async (data) => {
   // return new Promise((resolve, reject) => setTimeout(() => resolve('📫 Message published'), 1000));
 };
 
-const subscribe = (subscriptionId) => {
+export const subscribe = (subscriptionId) => {
   const subscription = pubsub.subscription(subscriptionId);
   console.info(`📭 Listening for messages on ${subscriptionId}`);
   return subscription
 };
 
-const handleMessage = (message) => {
+export const handleMessage = (message) => {
   console.log(`📬 Received message ${message.id}:`);
   let data;
   data = Buffer.from(message.data, 'base64').toString().trim();
@@ -39,7 +39,7 @@ const handleMessage = (message) => {
   message.ack();
 };
 
-const bundleMessages = async (messages) => {
+export const bundleMessages = async (messages) => {
   const results = [];
   for await (const result of asyncPool(POOL_CONCURRENCY, messages, publish)) {
     results.push(result);
